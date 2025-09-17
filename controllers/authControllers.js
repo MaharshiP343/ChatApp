@@ -1,12 +1,11 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
-const user = require("../models/user");
+const User = require("../models/user");
 
 router.post("/signup", async(req, res) => {
-
   try{
     //if user already exists
-    const user = await user.findOne({ email: req.body.email })
+    const user = await User.findOne({ email: req.body.email })
     //if user exists, send  error
     if(user) {
       return res.status(400).send({
@@ -16,14 +15,24 @@ router.post("/signup", async(req, res) => {
     }
     
     //encrypt password
-    await bcrypt.hash(req.body.password, 10, async (err, hash) => {
+    const hashedpassword = await bcrypt.hash(req.body.password, 10);
+    req.body.password = hashedpassword;
+
       
       //if user does not exist, create user
+      const newUser = new User(req.body);
+      await newUser.save();
+
     //create a new user in the database
 
+    res.status(201).send({
+      message: "User created successfully",
+      success: true
 
-
+    });
   }
+
+  
 
   catch(error) {
     res.send({
@@ -32,7 +41,8 @@ router.post("/signup", async(req, res) => {
 
     });
   }
+  
+}); 
 
-})
 
 module.exports = router;
