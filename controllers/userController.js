@@ -2,6 +2,8 @@ const router = require('express').Router();
 const User = require('../models/user');
 const authMiddleware = require("../middlewares/authmiddleware");
 
+
+
 router.get('/get-logged-user', authMiddleware, async (req, res) => {
   try {
    // console.log('Route: Starting query with userId:', req.userId);
